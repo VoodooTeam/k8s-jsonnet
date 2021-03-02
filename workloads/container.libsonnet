@@ -22,9 +22,19 @@
                   + (if args != [] then { args: args } else {}),
     },
 
-
   env(keyvals=[])::
     {
       env: keyvals,
+    },
+
+  secretRef(name):: {
+    secretRef: {
+      name: name,
+    },
+  },
+
+  envFrom(secretRefs=[])::
+    {
+      envForm: secretRefs,
     },
 }
