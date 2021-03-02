@@ -3,17 +3,7 @@
   spec(containers, saName=null)::
     {
       containers: containers,
-      serviceAccountName: saName,
-    },
+    }
+    + (if saName != null then { serviceAccountName: saName } else {}),
 
-  keyval(name, value)::
-    {
-      name: name,
-      value: value,
-    },
-
-  env(keyvals=[])::
-    {
-      env: keyvals,
-    },
 }
