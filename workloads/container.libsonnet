@@ -35,6 +35,6 @@
 
   envFrom(secretRefs=[])::
     {
-      envForm: secretRefs,
+      envFrom: secretRefs,
     },
 }
