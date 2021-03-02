@@ -21,4 +21,10 @@
                   + (if command != [] then { command: command } else {})
                   + (if args != [] then { args: args } else {}),
     },
+
+
+  env(keyvals=[])::
+    {
+      env: keyvals,
+    },
 }
