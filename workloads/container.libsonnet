@@ -5,6 +5,12 @@
       image: image,
       imagePullPolicy: 'Always',
       ports: ports,
+      securityContext: {
+        allowPrivilegeEscalation: false,
+        capabilities: {
+          drop: ['ALL'],
+        },
+      },
     },
 
   port(containerPort, name=null)::
