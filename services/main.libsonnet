@@ -12,8 +12,8 @@ local common = import '../common/common.libsonnet';
     + { kind: 'Service' }
     + common.metadata(name)
     + {
-      selector: if selector == {} then { app: name } else selector,
       spec: {
+        selector: if selector == {} then { app: name } else selector,
         ports: ports,
       },
     },
