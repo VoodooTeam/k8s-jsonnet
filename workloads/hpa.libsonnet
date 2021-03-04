@@ -19,8 +19,8 @@ local common = import '../common/common.libsonnet';
           then resources
           else
             [
-              $.resource('memory', 70),
-              $.resource('cpu', 70),
+              $.resource('memory', 150),  // this is based on the request, not the limit
+              $.resource('cpu', 150),
             ],
       },
     },
