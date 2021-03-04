@@ -16,4 +16,18 @@
       },
     },
   },
+
+  deploy_root_permissions():: {
+    spec+: {
+      template+: {
+        spec+: {
+          securityContext: {},
+          containers: [
+            x { securityContext: {} }
+            for x in super.containers
+          ],
+        },
+      },
+    },
+  },
 }
