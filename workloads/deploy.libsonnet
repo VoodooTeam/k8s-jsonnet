@@ -12,6 +12,7 @@ local common = import '../common/common.libsonnet';
 
   spec(name, podSpec)::
     {
+      revisionHistoryLimit: 2,
       selector: {
         matchLabels: {
           app: name,
