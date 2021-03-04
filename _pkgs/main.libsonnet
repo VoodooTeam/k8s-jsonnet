@@ -21,30 +21,14 @@ local k = import '../main.libsonnet';
     k.svc.port(appPort),
   ]),
 
-  // container_merge target the container with the given image and overrides its definition
-  // with the provided object
-  container_merge(image, obj):: {
-    deploy+: {
-      spec+: {
-        template+: {
-          spec+: {
-            containers: [
-              if x.image == image
-              then x + obj
-              else x
-              for x in super.containers
-            ],
-          },
-        },
-      },
-    },
-  },
+  hpa(appName):: k.hpa.base(appName),
 
   // simple_dep_svc creates a basic deployment & svc object
   simple_dep_svc(appName, image, appPort=8080, createSa=true)::
     {
       deploy: $.dep(appName, image, appPort, createSa),
       svc: $.svc(appName, appPort),
+      hpa: $.hpa(appName),
     }
     + (if createSa then { sa: k.sa.base(appName) } else {}),
 }

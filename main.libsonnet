@@ -4,6 +4,7 @@ local irsa = import './irsa/main.libsonnet';
 local svc = import './services/main.libsonnet';
 local container = import './workloads/container.libsonnet';
 local deploy = import './workloads/deploy.libsonnet';
+local hpa = import './workloads/hpa.libsonnet';
 local pod = import './workloads/pod.libsonnet';
 
 {
@@ -14,4 +15,5 @@ local pod = import './workloads/pod.libsonnet';
   pod: pod,
   svc: svc,
   sa: sa,
+  hpa: hpa,
 }

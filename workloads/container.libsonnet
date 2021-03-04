@@ -5,6 +5,16 @@
       image: image,
       imagePullPolicy: 'Always',
       ports: ports,
+      resources: {
+        limits: {
+          cpu: '200m',
+          memory: '100Mi',
+        },
+        requests: {
+          cpu: '100m',
+          memory: '50Mi',
+        },
+      },
       securityContext: {
         allowPrivilegeEscalation: false,
         capabilities: {
