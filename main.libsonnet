@@ -1,3 +1,4 @@
+local sa = import './authentication/sa.libsonnet';
 local common = import './common/common.libsonnet';
 local irsa = import './irsa/main.libsonnet';
 local svc = import './services/main.libsonnet';
@@ -12,4 +13,5 @@ local pod = import './workloads/pod.libsonnet';
   irsa: irsa,
   pod: pod,
   svc: svc,
+  sa: sa,
 }
