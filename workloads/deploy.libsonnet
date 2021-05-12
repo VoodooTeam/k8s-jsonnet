@@ -1,16 +1,16 @@
 local common = import '../common/common.libsonnet';
+local pod = import './pod.libsonnet';
 
 {
-
-  base(meta, podSpec)::
+  default(name, image, port, ns=null)::
     common.apiVersion('apps/v1')
-    + meta
+    + common.metadata(name)
     + {
       kind: 'Deployment',
-      spec: $.spec(meta.metadata.name, podSpec),
+      spec: $.spec(name, image, port),
     },
 
-  spec(name, podSpec)::
+  spec(name, image, port)::
     {
       revisionHistoryLimit: 2,
       selector: {
@@ -24,8 +24,7 @@ local common = import '../common/common.libsonnet';
             app: name,
           },
         },
-        spec: podSpec,
+        spec: pod.spec(name, image, port),
       },
     },
-
 }

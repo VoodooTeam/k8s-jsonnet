@@ -68,3 +68,15 @@ will output in stdout :
 
 which is a valid k8s declaration in yaml format of the service we expected to create.
 
+
+# Run tests
+## dependencies 
+- jsonnet
+- kubeval
+- polaris
+- bats-core
+
+## Run
+```
+bats -r .
+```

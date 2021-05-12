@@ -1,34 +1,13 @@
 local k = import '../main.libsonnet';
 
 {
-  dep(appName, image, appPort, createSa):: k.deploy.base(
-    k.common.metadata(appName),
-    k.pod.spec(
-      [
-        (
-          k.container.base(
-            appName
-            , image
-            , [k.container.port(appPort)]
-          )
-        ),
-      ]
-      , if createSa then appName else null
-    )
-  ),
-
-  svc(appName, appPort):: k.svc.base(appName, [
-    k.svc.port(appPort),
-  ]),
-
-  hpa(appName):: k.hpa.base(appName),
 
   // simple_dep_svc creates a basic deployment & svc object
-  simple_dep_svc(appName, image, appPort=8080, createSa=true)::
+  app(name, image, port=3000, permissions=null)::  //todo add domain to generate ingress
     {
-      deploy: $.dep(appName, image, appPort, createSa),
-      svc: $.svc(appName, appPort),
-      hpa: $.hpa(appName),
+      deploy: k.deploy.default(name, image, port),
+      svc: k.svc.default(name, [k.svc.port(port)]),
+      hpa: k.hpa.default(name),
     }
-    + (if createSa then { sa: k.sa.base(appName) } else {}),
+    + (if permissions != null then { irsa: 'todo' } else { sa: k.sa.default(name) }),
 }

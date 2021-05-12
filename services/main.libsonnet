@@ -2,7 +2,7 @@ local common = import '../common/common.libsonnet';
 
 {
 
-  base(name, ports, selector={})::
+  default(name, ports, selector={})::
     assert std.isArray(ports);
     assert std.length(ports) > 0;
     assert std.length(ports) == 1

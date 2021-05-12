@@ -1,10 +1,9 @@
 {
-  base(n, image, ports=[])::
+  spec(name, image, port)::
     {
-      name: n,
+      name: name,
       image: image,
       imagePullPolicy: 'Always',
-      ports: ports,
       resources: {
         limits: {
           cpu: '200m',
@@ -15,20 +14,38 @@
           memory: '50Mi',
         },
       },
+      livenessProbe: {
+        httpGet: {
+          path: '/healthz',
+          port: port,
+        },
+        initialDelaySeconds: 3,
+        periodSeconds: 3,
+      },
+      readinessProbe: {
+        httpGet: {
+          path: '/healthz',
+          port: port,
+        },
+        initialDelaySeconds: 3,
+        periodSeconds: 3,
+      },
       securityContext: {
         allowPrivilegeEscalation: false,
+        readOnlyRootFilesystem: true,
         capabilities: {
           drop: ['ALL'],
         },
       },
-    },
-
-  port(containerPort, name=null)::
-    {
-      containerPort: containerPort,
-      assert containerPort > 0 && containerPort < 65536,
     }
-    + (if name != null then { name: name } else {}),
+    + (if port != null then { ports: [$.port(port, name)] } else {}),
+
+  port(number, name)::
+    {
+      assert number > 0 && number < 65536,
+      containerPort: number,
+      name: name,
+    },
 
 
   entryPoint(command=[], args=[])::
