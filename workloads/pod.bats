@@ -1,4 +1,4 @@
-load ../test_helpers.bats
+load ../_test_utils/helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/pod.libsonnet')"
 default=$base.default

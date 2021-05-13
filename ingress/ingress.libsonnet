@@ -1,46 +1,65 @@
 local common = import '../common/common.libsonnet';
 
+// paths must be a list of objects with keys :
+// route(string), svcName(string), svcPort(string|number), routeType(optional, string)
 {
-  nginx_tls(name, hosts_paths=[], issuer)::
-    assert std.length(hosts_paths) > 0;
+  nginx(name, domain, paths, clusterIssuer='letsencrypt-production', ns=null)::
+    assert std.length(paths) > 0;
+    assert std.objectHas(paths[0], 'route');
+    assert std.objectHas(paths[0], 'svcName');
+    assert std.objectHas(paths[0], 'svcPort');
 
     common.apiVersion('networking.k8s.io/v1beta1')
-    + { kind: 'Ingress' }
     + common.metadata(
-      name, null, {}, {
-        'cert-manager.io/issuer': issuer,
+      name,
+      ns,
+      annotations={
+        'cert-manager.io/cluster-issuer': clusterIssuer,
         'kubernetes.io/tls-acme': 'true',
         'kubernetes.io/ingress.class': 'nginx',
       }
     )
     + {
+      kind: 'Ingress',
       spec: {
-        rules: hosts_paths,
-        tls: [
+        tls: [{
+          hosts: [domain],
+          secretName: name + '-cert',
+        }],
+        rules: [
           {
-            hosts: [
-              h.host
-              for h in hosts_paths
-            ],
-            secretName: name + '-cert',
+            host: domain,
+            http: {
+              paths:
+                [
+                  $.path(
+                    p.route,
+                    p.svcName,
+                    p.svcPort,
+                    (if std.objectHas(p, 'routeType') then p.routeType),
+                  )
+                  for p in paths
+                ],
+            },
           },
         ],
       },
     },
 
-  host_paths(host, paths=[]):: {
-    host: host,
-    http: {
-      paths: paths,
+  path(route, svcName, svcPort, type='Prefix')::
+    local _type = if type == null then 'Prefix' else type;
+    {
+      path: route,
+      pathType: _type,
+      backend: {
+        service: {
+          name: svcName,
+          port: (
+            if std.isNumber(svcPort)
+            then { number: svcPort }
+            else { name: svcPort }
+          ),
+        },
+      },
     },
-  },
-
-  path(route, svcName, svcPort, type='Prefix'):: {
-    path: route,
-    pathType: type,
-    backend: {
-      serviceName: svcName,
-      servicePort: svcPort,
-    },
-  },
 }

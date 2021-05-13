@@ -3,17 +3,15 @@
   apiVersion(v='v1')::
     { apiVersion: v },
 
-  metadata(name, ns=null, ll={}, aa={})::
+  metadata(name, ns=null, labels={}, annotations={})::
     {
-      // we set the {app: name} label by default
-      local labels = { app: name } + ll,
-
       metadata: {
                   name: name,
-                  labels: labels,
+                  labels: { app: name }
+                          + labels,
                 }
                 + (if ns != null then { namespace: ns } else {})
-                + (if aa != {} then { annotations: aa } else {}),
+                + (if annotations != {} then { annotations: annotations } else {}),
     },
 
   keyval(name, value)::

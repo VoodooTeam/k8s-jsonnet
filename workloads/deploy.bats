@@ -1,10 +1,10 @@
-load ../test_helpers.bats
+load ../_test_utils/helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/deploy.libsonnet')"
 default=$base.default
 
 @test "deploy: minimal - rendering" {
-  $gen "$default('name', 'image:v1', 8080)"
+  $gen "$default('name', 'image:v1', 8080)" >/dev/null
 }
 
 @test "deploy: minimal - kubeval" {
