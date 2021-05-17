@@ -57,9 +57,14 @@
                   + (if args != null then { args: args } else {}),
     },
 
-  env(keyvals)::
+  envFromSecret(secretName)::
     {
-      env: keyvals,
+      envFrom: [$.secretRef(secretName)],
+    },
+
+  envFromConfigMap(cmName)::
+    {
+      envFrom: [$.configMapRef(cmName)],
     },
 
   secretRef(name):: {
@@ -68,8 +73,10 @@
     },
   },
 
-  envFrom(secretRefs=[])::
-    {
-      envFrom: secretRefs,
+  configMapRef(name):: {
+    configMapRef: {
+      name: name,
     },
+  },
+
 }
