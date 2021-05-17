@@ -16,5 +16,5 @@ default=$base.default
 }
 
 @test "deploy: complete - rendering" {
-  $gen "$default('name', 'image:v1', 8080, 'my-ns')" | $kubeval
+  $gen "$default('name', 'image:v1', 8080, namespace='my-ns')" | $kubeval
 }

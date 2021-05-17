@@ -18,6 +18,7 @@ local common = import '../common/common.libsonnet';
       },
     },
 
+
   statement(resource, actions)::
     assert std.isArray(actions);
     {

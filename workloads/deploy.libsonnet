@@ -2,17 +2,18 @@ local common = import '../common/common.libsonnet';
 local pod = import './pod.libsonnet';
 
 {
-  default(name, image, port, ns=null)::
+  default(name, image, port, replicas=null, ns=null)::
     common.apiVersion('apps/v1')
     + common.metadata(name)
     + {
       kind: 'Deployment',
-      spec: $.spec(name, image, port),
+      spec: $.spec(name, image, port, replicas),
     },
 
-  spec(name, image, port)::
+  spec(name, image, port, replicas)::
     {
       revisionHistoryLimit: 2,
+      replicas: replicas,
       selector: {
         matchLabels: {
           app: name,
