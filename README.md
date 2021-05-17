@@ -4,7 +4,16 @@ jsonnet definitions of k8s resources that can be shared across projects
 
 To import this lib in your project, please use [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler/releases)
 
-## example usage
+## examples 
+
+You have a few examples in the [./\_examples](./\_examples/) folder
+
+```
+jsonnet -y ./_examples/app_minimal.jsonnet | yq eval -P
+jsonnet -y ./_examples/app_complete.jsonnet | yq eval -P
+```
+
+## Import this in your project 
 
 if you don't use jsonnet bundler in your project yet :
 
@@ -18,7 +27,8 @@ add this repo as a dependency :
 jb install https://github.com/VoodooTeam/k8s-jsonnet@v0.1.0
 ```
 
-you can now reference these files in your project.
+You can now reference these files in your project using `local someResource = import 'k8s-jsonnet/someResource.libonnet';` to import resources defined here
+
 
 ### Create a service
 Let's create a k8s `Service` called `my-svc` targetting pods with the label `app: "my-app"` on the port `8080` (exposed on the port `8080` of the service itself).

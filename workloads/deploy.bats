@@ -1,10 +1,11 @@
-load ../_test_utils/helpers.bats
+load ../helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/deploy.libsonnet')"
 default=$base.default
 
 @test "deploy: minimal - rendering" {
-  $gen "$default('name', 'image:v1', 8080)" >/dev/null
+  m=$($gen "$default('name', 'image:v1', 8080)")
+  jq_test "$m" '.kind' 'Deployment'
 }
 
 @test "deploy: minimal - kubeval" {
@@ -16,5 +17,9 @@ default=$base.default
 }
 
 @test "deploy: complete - rendering" {
-  $gen "$default('name', 'image:v1', 8080, namespace='my-ns')" | $kubeval
+  m=$($gen "$default('name', 'image:v1', 8080, replicas=12, ns='my-ns')")
+
+  echo $m | kubeval 
+  jq_test "$m" '.metadata.namespace' 'my-ns'
+  jq_test "$m" '.spec.replicas' '12'
 }

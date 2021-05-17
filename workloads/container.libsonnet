@@ -38,9 +38,9 @@
         },
       },
     }
-    + (if port != null then { ports: [$.port(port, name)] } else {}),
+    + (if port != null then { ports: [$.port(port)] } else {}),
 
-  port(number, name)::
+  port(number, name='default')::
     assert number > 0 && number < 65536;
     {
       containerPort: number,
@@ -48,14 +48,16 @@
     },
 
 
-  entryPoint(command=[], args=[])::
+  entryPoint(command=null, args=null)::
+    assert std.type(command) == 'null' || std.isArray(command);
+    assert std.type(args) == 'null' || std.isArray(args);
     {
       entryPoint: {}
-                  + (if command != [] then { command: command } else {})
-                  + (if args != [] then { args: args } else {}),
+                  + (if command != null then { command: command } else {})
+                  + (if args != null then { args: args } else {}),
     },
 
-  env(keyvals=[])::
+  env(keyvals)::
     {
       env: keyvals,
     },

@@ -1,4 +1,4 @@
-load ../_test_utils/helpers.bats
+load ../helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/ingress.libsonnet')"
 nginx=$base.nginx

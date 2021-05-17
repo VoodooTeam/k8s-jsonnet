@@ -4,7 +4,7 @@ local pod = import './pod.libsonnet';
 {
   default(name, image, port, replicas=null, ns=null)::
     common.apiVersion('apps/v1')
-    + common.metadata(name)
+    + common.metadata(name, ns)
     + {
       kind: 'Deployment',
       spec: $.spec(name, image, port, replicas),
@@ -13,7 +13,6 @@ local pod = import './pod.libsonnet';
   spec(name, image, port, replicas)::
     {
       revisionHistoryLimit: 2,
-      replicas: replicas,
       selector: {
         matchLabels: {
           app: name,
@@ -27,7 +26,7 @@ local pod = import './pod.libsonnet';
         },
         spec: pod.spec(name, image, port),
       },
-    },
+    } + (if replicas != null then { replicas: replicas } else {}),
 
   utils:: {
     // add this after a deployment

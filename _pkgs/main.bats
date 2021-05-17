@@ -1,4 +1,4 @@
-load ../_test_utils/helpers.bats
+load ../helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/main.libsonnet')"
 app=$base.app
@@ -23,12 +23,10 @@ app=$base.app
 
 @test "app: irsa" {
   m=$($gen "$app('name', 'image:v1', awsPermissions=[{resource:'bla', action:['s3::List']}])")
-
   jq_test "$m" '.irsa.kind' 'IamRoleServiceAccount'
 }
 
 @test "app: ingress" {
   m=$($gen "$app('name', 'image:v1', domain='voodoo.io')")
-
   jq_test "$m" '.ingress.kind' 'Ingress'
 }

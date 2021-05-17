@@ -2,7 +2,7 @@ local common = import '../common/common.libsonnet';
 
 {
 
-  default(name, ports, selector={})::
+  default(name, ports, selector=null, ns=null)::
     assert std.isArray(ports);
     assert std.length(ports) > 0;
     assert std.length(ports) == 1
@@ -10,10 +10,10 @@ local common = import '../common/common.libsonnet';
 
     common.apiVersion('v1')
     + { kind: 'Service' }
-    + common.metadata(name)
+    + common.metadata(name, ns)
     + {
       spec: {
-        selector: if selector == {} then { app: name } else selector,
+        selector: if selector != null then selector else { app: name },
         ports: ports,
       },
     },

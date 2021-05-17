@@ -3,15 +3,15 @@
   apiVersion(v='v1')::
     { apiVersion: v },
 
-  metadata(name, ns=null, labels={}, annotations={})::
+  metadata(name, ns=null, labels=null, annotations=null)::
     {
       metadata: {
                   name: name,
                   labels: { app: name }
-                          + labels,
+                          + if labels != null then labels else {},
                 }
                 + (if ns != null then { namespace: ns } else {})
-                + (if annotations != {} then { annotations: annotations } else {}),
+                + (if annotations != null then { annotations: annotations } else {}),
     },
 
   keyval(name, value)::
