@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: appName
+  name: appName
+  namespace: my-hardcoded-ns
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: appName
+  template:
+    metadata:
+      labels:
+        app: appName
+    spec:
+      containers:
+        - image: appImage:v1.0
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          name: appName
+          ports:
+            - containerPort: 3000
+              name: default
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          resources:
+            limits:
+              cpu: 200m
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 50Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsUser: 1000
+      serviceAccountName: appName
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: appName
+  name: appName
+  namespace: my-hardcoded-ns
+spec:
+  maxReplicas: 100
+  metrics:
+    - resource:
+        name: memory
+        target:
+          averageUtilization: 100
+          type: Utilization
+      type: Resource
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 100
+          type: Utilization
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: appName
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  labels:
+    app: appName
+  name: appName
+  namespace: my-hardcoded-ns
+spec:
+  rules:
+    - host: myapp.voodoo.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: appName
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - myapp.voodoo.io
+      secretName: appName-cert
+---
+apiVersion: irsa.voodoo.io/v1alpha1
+kind: IamRoleServiceAccount
+metadata:
+  labels:
+    app: appName
+  name: appName
+  namespace: my-hardcoded-ns
+spec:
+  policy:
+    statement:
+      - action:
+          - s3::List*
+        resource: arn:aws:s3:::my-s3-bucket
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: appName
+  name: appName
+  namespace: my-hardcoded-ns
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app: appName

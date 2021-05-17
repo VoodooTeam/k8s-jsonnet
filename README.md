@@ -11,7 +11,9 @@ You have a few examples in the [./\_examples](./\_examples/) folder
 ```
 jsonnet -y ./_examples/app_minimal.jsonnet | yq eval -P
 jsonnet -y ./_examples/app_complete.jsonnet | yq eval -P
+jsonnet -y ./_examples/app_withEnvFromSecret.jsonnet | yq eval -P
 ```
+for the results of the commands above, see : [./\_examples/results](./\_examples/results) folder
 
 ## Import this in your project 
 

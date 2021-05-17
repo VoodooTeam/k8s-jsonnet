@@ -3,13 +3,7 @@ local container = import '../workloads/container.libsonnet';
 local deploy = import '../workloads/deploy.libsonnet';
 
 // our "base" application, using all the default best practices
-local myApp = pkgs.app(
-  'appName',
-  'appImage:v1.0',
-  domain='myapp.voodoo.io',
-  ns='my-hardcoded-namespace',
-  awsPermissions=[{ resource: 'arn:aws:s3:::my-s3-bucket', action: ['s3::List*'] }]
-);
+local myApp = pkgs.app('appName', 'appImage:v1.0');
 
 std.objectValues(
   myApp
