@@ -27,4 +27,36 @@ local pod = import './pod.libsonnet';
         spec: pod.spec(name, image, port),
       },
     },
+
+  utils:: {
+    // add this after a deployment
+    removeAllSecurityContexts():: {
+      spec+: {
+        template+: {
+          spec+: {
+            securityContext:: {},
+            containers: [
+              x { securityContext:: {} }
+              for x in super.containers
+            ],
+          },
+        },
+      },
+    },
+
+    updateContainer(containerName, container):: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              if x.name == containerName
+              then x + container
+              else x
+              for x in super.containers
+            ],
+          },
+        },
+      },
+    },
+  },
 }

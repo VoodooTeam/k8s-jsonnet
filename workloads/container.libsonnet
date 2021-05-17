@@ -41,8 +41,8 @@
     + (if port != null then { ports: [$.port(port, name)] } else {}),
 
   port(number, name)::
+    assert number > 0 && number < 65536;
     {
-      assert number > 0 && number < 65536,
       containerPort: number,
       name: name,
     },

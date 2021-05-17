@@ -1,12 +1,15 @@
-local k = import '../main.libsonnet';
+local sa = import '../authentication/sa.libsonnet';
+local svc = import '../services/main.libsonnet';
+local deploy = import '../workloads/deploy.libsonnet';
+local hpa = import '../workloads/hpa.libsonnet';
 
 {
 
   app(name, image, port=3000, permissions=null)::  //todo add domain to generate ingress
     {
-      deploy: k.deploy.default(name, image, port),
-      svc: k.svc.default(name, [k.svc.port(port)]),
-      hpa: k.hpa.default(name),
+      deploy: deploy.default(name, image, port),
+      svc: svc.default(name, [svc.port(port)]),
+      hpa: hpa.default(name),
     }
-    + (if permissions != null then { irsa: 'todo' } else { sa: k.sa.default(name) }),
+    + (if permissions != null then { irsa: 'todo' } else { sa: sa.default(name) }),
 }

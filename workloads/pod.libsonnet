@@ -22,4 +22,17 @@ local container = import './container.libsonnet';
         container.spec(name, image, port),
       ],
     },
+
+  utils:: {
+    updateContainer(containerName, container):: {
+      spec+: {
+        containers: [
+          if x.name == containerName
+          then x + container
+          else x
+          for x in super.containers
+        ],
+      },
+    },
+  },
 }
