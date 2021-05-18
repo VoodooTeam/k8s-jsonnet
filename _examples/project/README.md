@@ -1,7 +1,7 @@
 # Real project example
 
 ## Jsonnet bundler
-jb-bundler is used to get the k8s-jsonnet lib (this repo)
+jsonnet-bundler (`jb`) is used to get the k8s-jsonnet lib (this repo)
 
 ```
 jb init
@@ -30,12 +30,12 @@ You can get a pretty yaml output of our app using :
 jsonnet -J ./vendor -y ./app.jsonnet | yq eval -P
 ```
 
-It simply imports `definitions.libsonnet` and outputs it as a list of resources (what k8s expects).
+It simply imports `./definitions.libsonnet` and outputs it as a list of resources (what k8s expects).
 
 ### definitions.libsonnet
-This file contains all our resources in a map, this is convenient if you've got to tweak something during the developement and your app grows in size because it allows you to output a single resource.
+This file contains all our resources in a map, this is convenient if you've got to tweak something during the development and your app grows in size because it allows you to target a single resource.
 
-Get just the deployment of our app (pretty yaml) :
+Get just the `deployment` of our app (pretty yaml) :
 ```
 jsonnet -e  "(import './definitions.libsonnet').deploy" -J ./vendor | yq eval -P
 ```
