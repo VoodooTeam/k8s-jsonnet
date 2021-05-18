@@ -1,3 +1,1 @@
-local app = import './definitions.libsonnet';
-
-std.objectValues(app)
+std.objectValues(import './definitions.libsonnet')

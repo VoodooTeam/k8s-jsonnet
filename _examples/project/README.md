@@ -30,13 +30,7 @@ You can get a pretty yaml output of our app using :
 jsonnet -J ./vendor -y ./app.jsonnet | yq eval -P
 ```
 
-It imports 2 other files : `./image.json` & `definitions.libsonnet`
-
-### image.json
-This file only contains an object with our app image tag. This is convenient because if you use a gitops continuous delivery pattern, you can use a standard tool like `jq` to just update this field.
-
-_NB_: jsonnet is a super set of `json` so there's no problem importing json in jsonnet.
-
+It simply imports `definitions.libsonnet` and outputs it as a list of resources (what k8s expects).
 
 ### definitions.libsonnet
 This file contains all our resources in a map, this is convenient if you've got to tweak something during the developement and your app grows in size because it allows you to output a single resource.
@@ -45,3 +39,11 @@ Get just the deployment of our app (pretty yaml) :
 ```
 jsonnet -e  "(import './definitions.libsonnet').deploy" -J ./vendor | yq eval -P
 ```
+
+It imports some of the resources of this lib and the `./image.json` file.
+
+### image.json
+This file only contains an object with our app image tag. This is convenient because if you use a gitops continuous delivery pattern, you can use a standard tool like `jq` to just update this field.
+
+_NB_: jsonnet is a super set of `json` so there's no problem importing json in jsonnet.
+
