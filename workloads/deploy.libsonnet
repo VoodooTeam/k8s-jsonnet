@@ -44,9 +44,8 @@ local pod = import './pod.libsonnet';
       },
     },
 
-    // by default, this will update the first container
+    // by default, this will update all containers
     // pass it the name of the container to update to only update this one
-    // pass '*' as name to update all containers
     overrideContainer(overrides, name=null)::
       assert std.isObject(overrides);
       assert std.type(name) == 'null' || std.isString(name);
@@ -55,15 +54,11 @@ local pod = import './pod.libsonnet';
           template+: {
             spec+: {
               containers: (
-                if name == null
-                then
-                  std.mapWithIndex(function(i, container) if i == 0 then container + overrides else container, super.containers)  // only the first container
-                else
-                  if name == '*'
-                  then
-                    std.map(function(container) container + overrides, super.containers)  // all containers
-                  else
-                    std.map(function(container) if container.name == name then container + overrides else container, super.containers)  // all containers
+                std.map(function(container)
+                          if name == null || container.name == name
+                          then container + overrides
+                          else container,
+                        super.containers)
               ),
             },
           },
