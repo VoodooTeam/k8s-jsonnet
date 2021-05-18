@@ -1,7 +1,7 @@
 load ../helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/main.libsonnet')"
-app=$base.app
+app=$base.default
 
 @test "app: minimal - rendering" {
   m=$($gen "$app('name', 'image:v1')")

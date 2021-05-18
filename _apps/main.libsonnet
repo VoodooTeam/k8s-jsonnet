@@ -7,7 +7,7 @@ local hpa = import '../workloads/hpa.libsonnet';
 
 {
   // if provided, awsPermissions must be a list of irsa.statement (see /irsa/main.libsonnet)
-  app(name, image, port=3000, replicas=null, awsPermissions=null, domain=null, ns=null)::
+  default(name, image, port=3000, replicas=null, awsPermissions=null, domain=null, ns=null)::
     {
       deploy: deploy.default(name, image, port, replicas=replicas, ns=ns),
       svc: svc.default(name, [svc.port(port)], ns=ns),

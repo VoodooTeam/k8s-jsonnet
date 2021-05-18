@@ -1,3 +1,3 @@
-local pkgs = import '../_pkgs/main.libsonnet';
+local apps = import '../_apps/main.libsonnet';
 
-std.objectValues(pkgs.app('appName', 'appImage:v1.0'))
+std.objectValues(apps.default('appName', 'appImage:v1.0'))
