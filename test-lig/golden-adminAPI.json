@@ -1,0 +1,219 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "admin-api"
+      },
+      "name": "admin-api"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "admin-api"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "admin-api"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "AdminAPI"
+                },
+                {
+                  "name": "FIREBASE_PROJECT_ID",
+                  "value": "ligdev"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Admin-API-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": ":8080"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "admin-api"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/admin-api:f643e290eb88cf54db0246fcb4e46042feb47668",
+              "imagePullPolicy": "Always",
+              "name": "admin-api",
+              "ports": [
+                {
+                  "containerPort": 8080
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                }
+              }
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 2000,
+            "runAsGroup": 3000,
+            "runAsUser": 1000
+          },
+          "serviceAccountName": "admin-api"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "admin-api"
+      },
+      "name": "admin-api"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "admin-api"
+      }
+    }
+  },
+  "ingress": {
+    "apiVersion": "networking.k8s.io/v1beta1",
+    "kind": "Ingress",
+    "metadata": {
+      "annotations": {
+        "cert-manager.io/issuer": "letsencrypt-prod",
+        "kubernetes.io/ingress.class": "nginx",
+        "kubernetes.io/tls-acme": "true",
+        "nginx.ingress.kubernetes.io/cors-allow-headers": "DNT,X-CustomHeader,X-LANG,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Api-Key,X-Device-Id,Access-Control-Allow-Origin,bearer,service",
+        "nginx.ingress.kubernetes.io/cors-allow-methods": "PUT, GET, POST, DELETE, PATCH, OPTIONS",
+        "nginx.ingress.kubernetes.io/cors-allow-origin": "*",
+        "nginx.ingress.kubernetes.io/enable-cors": "true",
+        "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
+        "nginx.ingress.kubernetes.io/proxy-body-size": "8m"
+      },
+      "labels": {
+        "app": "admin-api"
+      },
+      "name": "admin-api"
+    },
+    "spec": {
+      "rules": [
+        {
+          "host": "lig-admin-api.dev-vlbapps.com",
+          "http": {
+            "paths": [
+              {
+                "backend": {
+                  "serviceName": "admin-api",
+                  "servicePort": 8080
+                },
+                "path": "/",
+                "pathType": "Prefix"
+              }
+            ]
+          }
+        }
+      ],
+      "tls": [
+        {
+          "hosts": [
+            "lig-admin-api.dev-vlbapps.com"
+          ],
+          "secretName": "admin-api-cert"
+        }
+      ]
+    }
+  },
+  "sa": {
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "admin-api"
+      },
+      "name": "admin-api"
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "admin-api"
+      },
+      "name": "admin-api"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 8080
+        }
+      ],
+      "selector": {
+        "app": "admin-api"
+      }
+    }
+  }
+}

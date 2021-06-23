@@ -6,7 +6,7 @@ local common = import '../common/common.libsonnet';
     assert std.isArray(statements);
 
     common.apiVersion('irsa.voodoo.io/v1alpha1')
-    + common.metadata(saName, ns)
+    + common.metadata.base(saName, ns)
     + {
       kind: 'IamRoleServiceAccount',
     }

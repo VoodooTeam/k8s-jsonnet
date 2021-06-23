@@ -1,0 +1,178 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "activity"
+      },
+      "name": "activity"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "activity"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "activity"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "ActivityService"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Activity-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": ":8080"
+                },
+                {
+                  "name": "USER_SERVICE",
+                  "value": "http://user:8080"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/activity:b03925ba5e439ccdb2b720d72ab6dee6d94c081f",
+              "imagePullPolicy": "Always",
+              "name": "activity",
+              "ports": [
+                {
+                  "containerPort": 8080
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                }
+              }
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 2000,
+            "runAsGroup": 3000,
+            "runAsUser": 1000
+          },
+          "serviceAccountName": "activity"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "activity"
+      },
+      "name": "activity"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "activity"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "irsa.voodoo.io/v1alpha1",
+    "kind": "IamRoleServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "activity"
+      },
+      "name": "activity"
+    },
+    "spec": {
+      "policy": {
+        "statement": [
+          {
+            "action": [
+              "sqs:*"
+            ],
+            "resource": "*"
+          }
+        ]
+      }
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "activity"
+      },
+      "name": "activity"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 8080
+        }
+      ],
+      "selector": {
+        "app": "activity"
+      }
+    }
+  }
+}

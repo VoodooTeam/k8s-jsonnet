@@ -1,0 +1,2721 @@
+{
+   "activity": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "activity"
+            },
+            "name": "activity"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "activity"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "activity"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "ActivityService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Activity-Service-dev"
+                           },
+                           {
+                              "name": "USER_SERVICE",
+                              "value": "http://user:8080"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/activity:b03925ba5e439ccdb2b720d72ab6dee6d94c081f",
+                        "imagePullPolicy": "Always",
+                        "name": "activity",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "activity"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "activity"
+            },
+            "name": "activity"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "activity"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "activity"
+            },
+            "name": "activity"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "activity"
+            },
+            "name": "activity"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "activity"
+            }
+         }
+      }
+   },
+   "adminAPI": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "admin-api"
+            },
+            "name": "admin-api"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "admin-api"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "admin-api"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "AdminAPI"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Admin-API-dev"
+                           },
+                           {
+                              "name": "FIREBASE_PROJECT_ID",
+                              "value": "ligdev"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "admin-api"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/admin-api:f643e290eb88cf54db0246fcb4e46042feb47668",
+                        "imagePullPolicy": "Always",
+                        "name": "admin-api",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "admin-api"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "admin-api"
+            },
+            "name": "admin-api"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "admin-api"
+            }
+         }
+      },
+      "ing": {
+         "apiVersion": "networking.k8s.io/v1beta1",
+         "kind": "Ingress",
+         "metadata": {
+            "annotations": {
+               "cert-manager.io/issuer": "letsencrypt-prod",
+               "kubernetes.io/ingress.class": "nginx",
+               "kubernetes.io/tls-acme": "true",
+               "nginx.ingress.kubernetes.io/cors-allow-headers": "DNT,X-CustomHeader,X-LANG,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,X-Api-Key,X-Device-Id,Access-Control-Allow-Origin,bearer,service",
+               "nginx.ingress.kubernetes.io/cors-allow-methods": "PUT, GET, POST, DELETE, PATCH, OPTIONS",
+               "nginx.ingress.kubernetes.io/cors-allow-origin": "*",
+               "nginx.ingress.kubernetes.io/enable-cors": "true",
+               "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
+               "nginx.ingress.kubernetes.io/proxy-body-size": "8m"
+            },
+            "labels": {
+               "app": "admin-api"
+            },
+            "name": "admin-api"
+         },
+         "spec": {
+            "rules": [
+               {
+                  "host": "lig-admin-api.dev-vlbapps.com",
+                  "http": {
+                     "paths": [
+                        {
+                           "backend": {
+                              "serviceName": "admin-api",
+                              "servicePort": 8080
+                           },
+                           "path": "/",
+                           "pathType": "Prefix"
+                        }
+                     ]
+                  }
+               }
+            ],
+            "tls": [
+               {
+                  "hosts": [
+                     "lig-admin-api.dev-vlbapps.com"
+                  ],
+                  "secretName": "admin-api-cert"
+               }
+            ]
+         }
+      },
+      "sa": {
+         "apiVersion": "v1",
+         "kind": "ServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "admin-api"
+            },
+            "name": "admin-api"
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "admin-api"
+            },
+            "name": "admin-api"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "admin-api"
+            }
+         }
+      }
+   },
+   "badge": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "badge"
+            },
+            "name": "badge"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "badge"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "badge"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "BadgeService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Badge-Service-dev"
+                           },
+                           {
+                              "name": "S3_BUCKET_PUBLIC",
+                              "value": "gp-lig-badge-service-dev-public"
+                           },
+                           {
+                              "name": "IMAGE_HOST_NAME",
+                              "value": "https://badge-assets.dev-lig-app.com/"
+                           },
+                           {
+                              "name": "GAME_SERVICE",
+                              "value": "http://game:8080"
+                           },
+                           {
+                              "name": "LEAGUE_SERVICE",
+                              "value": "http://league:8080"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/badge:93624130f46e60f7680c6f9ffdeb8f07ff501543",
+                        "imagePullPolicy": "Always",
+                        "name": "badge",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "badge"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "badge"
+            },
+            "name": "badge"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "badge"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "badge"
+            },
+            "name": "badge"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "s3:GetObject",
+                        "s3:GetObjectAcl",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl",
+                        "s3:DeleteObject"
+                     ],
+                     "resource": "arn:aws:s3:::gp-lig-badge-service-dev-public/*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "badge"
+            },
+            "name": "badge"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "badge"
+            }
+         }
+      }
+   },
+   "championships": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "championships"
+            },
+            "name": "championships"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "championships"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "championships"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "ChampionshipService"
+                           },
+                           {
+                              "name": "GRPC_PORT",
+                              "value": "50051"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Championship-Service-dev"
+                           },
+                           {
+                              "name": "LIG_SVC_LEADERBOARDS",
+                              "value": "leaderboard:50051"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/championships:120ccd54f3662e39d494567befe74cf0dbb011a6",
+                        "imagePullPolicy": "Always",
+                        "name": "championships",
+                        "ports": [
+                           {
+                              "containerPort": 50051
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "championships"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "championships"
+            },
+            "name": "championships"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "championships"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "v1",
+         "kind": "ServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "championships"
+            },
+            "name": "championships"
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "championships"
+            },
+            "name": "championships"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 50051
+               }
+            ],
+            "selector": {
+               "app": "championships"
+            }
+         }
+      }
+   },
+   "game": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "game"
+            },
+            "name": "game"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "game"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "game"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "GameService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Game-Service-dev"
+                           },
+                           {
+                              "name": "S3_BUCKET_PUBLIC",
+                              "value": "gp-lig-game-service-dev-public"
+                           },
+                           {
+                              "name": "IMAGE_HOST_NAME",
+                              "value": "https://game-assets.dev-lig-app.com/"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/game:56469d7de8ce0845704257b6f5d347b29a851354",
+                        "imagePullPolicy": "Always",
+                        "name": "game",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": { }
+                     }
+                  ],
+                  "securityContext": { },
+                  "serviceAccountName": "game"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "game"
+            },
+            "name": "game"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "game"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "game"
+            },
+            "name": "game"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "s3:GetObject",
+                        "s3:GetObjectAcl",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl",
+                        "s3:DeleteObject"
+                     ],
+                     "resource": "arn:aws:s3:::gp-lig-game-service-dev-public/*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "game"
+            },
+            "name": "game"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "game"
+            }
+         }
+      }
+   },
+   "iap": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "iap"
+            },
+            "name": "iap"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "iap"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "iap"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "IAPService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-IAP-Service-dev"
+                           },
+                           {
+                              "name": "S3_BUCKET_PUBLIC",
+                              "value": "gp-lig-iap-service-dev-public"
+                           },
+                           {
+                              "name": "IMAGE_HOST_NAME",
+                              "value": "https://iap-assets.dev-lig-app.com/"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "in-app-purchase"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/iap:b820e2b1572bc8aaae520165cafcded647607651",
+                        "imagePullPolicy": "Always",
+                        "name": "iap",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "iap"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "iap"
+            },
+            "name": "iap"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "iap"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "iap"
+            },
+            "name": "iap"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "s3:GetObject",
+                        "s3:GetObjectAcl",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl",
+                        "s3:DeleteObject"
+                     ],
+                     "resource": "arn:aws:s3:::gp-lig-iap-service-dev-public/*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "iap"
+            },
+            "name": "iap"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "iap"
+            }
+         }
+      }
+   },
+   "leaderboard": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "leaderboard"
+            },
+            "name": "leaderboard"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "leaderboard"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "leaderboard"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "LeaderboardService"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": "8080"
+                           },
+                           {
+                              "name": "GRPC_PORT",
+                              "value": "50051"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Leaderboard-Service-dev"
+                           },
+                           {
+                              "name": "REDIS_CLUSTER_ID",
+                              "value": "lig-leaderboard-dev"
+                           },
+                           {
+                              "name": "MDB_DATABASE",
+                              "value": "leaderboard"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/leaderboard:8ffa071ceb18c7ae77dd25ce0604bf4ffd660d58",
+                        "imagePullPolicy": "Always",
+                        "name": "leaderboard",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           },
+                           {
+                              "containerPort": 50051
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "leaderboard"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "leaderboard"
+            },
+            "name": "leaderboard"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "leaderboard"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "leaderboard"
+            },
+            "name": "leaderboard"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "elasticache:DescribeReplicationGroups"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "leaderboard"
+            },
+            "name": "leaderboard"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "name": "http",
+                  "port": 8080
+               },
+               {
+                  "name": "grpc",
+                  "port": 50051
+               }
+            ],
+            "selector": {
+               "app": "leaderboard"
+            }
+         }
+      }
+   },
+   "league": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "league"
+            },
+            "name": "league"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "league"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "league"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "LeagueService"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-League-Service-dev"
+                           },
+                           {
+                              "name": "USER_SERVICE",
+                              "value": "http://user:8080"
+                           },
+                           {
+                              "name": "SCORE_HISTORY_SERVICE",
+                              "value": "http://score-history:8080"
+                           },
+                           {
+                              "name": "S3_BUCKET_PUBLIC",
+                              "value": "gp-lig-league-service-dev-public"
+                           },
+                           {
+                              "name": "IMAGE_HOST_NAME",
+                              "value": "https://league-assets.dev-lig-app.com/"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/league:a7bbb82cc1bf19319a8a1b2862b62cd44198f38f",
+                        "imagePullPolicy": "Always",
+                        "name": "league",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "league"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "league"
+            },
+            "name": "league"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "league"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "league"
+            },
+            "name": "league"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "s3:GetObject",
+                        "s3:GetObjectAcl",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl",
+                        "s3:DeleteObject"
+                     ],
+                     "resource": "arn:aws:s3:::gp-lig-league-service-dev-public/*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "league"
+            },
+            "name": "league"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "league"
+            }
+         }
+      }
+   },
+   "mobileAPI": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "mobile-api"
+            },
+            "name": "mobile-api"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "mobile-api"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "mobile-api"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "MobileAPI"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Mobile-API-dev"
+                           },
+                           {
+                              "name": "FIREBASE_PROJECT_ID",
+                              "value": "ligdev"
+                           },
+                           {
+                              "name": "ANDROID_MIN_APPVERSION",
+                              "value": "1.0.0"
+                           },
+                           {
+                              "name": "IOS_MIN_APPVERSION",
+                              "value": "1.3.0"
+                           },
+                           {
+                              "name": "ACTIVITY_SERVICE",
+                              "value": "http://activity:8080"
+                           },
+                           {
+                              "name": "GAME_SERVICE",
+                              "value": "http://game:8080"
+                           },
+                           {
+                              "name": "LEADERBOARD_SERVICE",
+                              "value": "http://leaderboard:8080"
+                           },
+                           {
+                              "name": "LEAGUE_SERVICE",
+                              "value": "http://league:8080"
+                           },
+                           {
+                              "name": "NOTIFICATION_SERVICE",
+                              "value": "http://notification:8080"
+                           },
+                           {
+                              "name": "BADGE_SERVICE",
+                              "value": "http://badge:8080"
+                           },
+                           {
+                              "name": "USER_SERVICE",
+                              "value": "http://user:8080"
+                           },
+                           {
+                              "name": "IAP_SERVICE",
+                              "value": "http://iap:8080"
+                           },
+                           {
+                              "name": "LIG_SVC_TOURNAMENTS",
+                              "value": "tournaments:10000"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/mobile-api:f4428e2d76d2cd42038e39dcea183e9646ee28bc",
+                        "imagePullPolicy": "Always",
+                        "name": "mobile-api",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "mobile-api"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "mobile-api"
+            },
+            "name": "mobile-api"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "mobile-api"
+            }
+         }
+      },
+      "ing": {
+         "apiVersion": "networking.k8s.io/v1beta1",
+         "kind": "Ingress",
+         "metadata": {
+            "annotations": {
+               "cert-manager.io/issuer": "letsencrypt-prod",
+               "kubernetes.io/ingress.class": "nginx",
+               "kubernetes.io/tls-acme": "true",
+               "nginx.ingress.kubernetes.io/force-ssl-redirect": "true",
+               "nginx.ingress.kubernetes.io/proxy-body-size": "8m"
+            },
+            "labels": {
+               "app": "mobile-api"
+            },
+            "name": "mobile-api"
+         },
+         "spec": {
+            "rules": [
+               {
+                  "host": "lig-mobile-api.dev-vlbapps.com",
+                  "http": {
+                     "paths": [
+                        {
+                           "backend": {
+                              "serviceName": "mobile-api",
+                              "servicePort": 8080
+                           },
+                           "path": "/",
+                           "pathType": "Prefix"
+                        }
+                     ]
+                  }
+               }
+            ],
+            "tls": [
+               {
+                  "hosts": [
+                     "lig-mobile-api.dev-vlbapps.com"
+                  ],
+                  "secretName": "mobile-api-cert"
+               }
+            ]
+         }
+      },
+      "sa": {
+         "apiVersion": "v1",
+         "kind": "ServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "mobile-api"
+            },
+            "name": "mobile-api"
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "mobile-api"
+            },
+            "name": "mobile-api"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "mobile-api"
+            }
+         }
+      }
+   },
+   "notification": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "notification"
+            },
+            "name": "notification"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "notification"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "notification"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "NotificationService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Notification-Service-dev"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "app-notification"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/notification:9a218629326fce61cbef0add88545e35bf477244",
+                        "imagePullPolicy": "Always",
+                        "name": "notification",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": { }
+                     }
+                  ],
+                  "securityContext": { },
+                  "serviceAccountName": "notification"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "notification"
+            },
+            "name": "notification"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "notification"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "notification"
+            },
+            "name": "notification"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "notification"
+            },
+            "name": "notification"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "notification"
+            }
+         }
+      }
+   },
+   "orchestrator": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "orchestrator"
+            },
+            "name": "orchestrator"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "orchestrator"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "orchestrator"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "OrchestratorService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Orchestrator-Service-dev"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/orchestrator:e0bf06105c3106d1061f8b9d3a36174d90879dff",
+                        "imagePullPolicy": "Always",
+                        "name": "orchestrator",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": { }
+                     }
+                  ],
+                  "securityContext": { },
+                  "serviceAccountName": "orchestrator"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "orchestrator"
+            },
+            "name": "orchestrator"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "orchestrator"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "v1",
+         "kind": "ServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "orchestrator"
+            },
+            "name": "orchestrator"
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "orchestrator"
+            },
+            "name": "orchestrator"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "orchestrator"
+            }
+         }
+      }
+   },
+   "scoreHistory": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "score-history"
+            },
+            "name": "score-history"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "score-history"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "score-history"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "ScoreHistoryService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Score-History-Service-dev"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/score-history:906c8a4820e3c581ee241ec9fb35ec257a7806dc",
+                        "imagePullPolicy": "Always",
+                        "name": "score-history",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "score-history"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "score-history"
+            },
+            "name": "score-history"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "score-history"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "score-history"
+            },
+            "name": "score-history"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "score-history"
+            },
+            "name": "score-history"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "score-history"
+            }
+         }
+      }
+   },
+   "shared": {
+      "issuer": {
+         "apiVersion": "cert-manager.io/v1",
+         "kind": "Issuer",
+         "metadata": {
+            "labels": {
+               "app": "letsencrypt-prod"
+            },
+            "name": "letsencrypt-prod"
+         },
+         "spec": {
+            "acme": {
+               "email": "devops@voodoo.io",
+               "privateKeySecretRef": {
+                  "name": "letsencrypt-prod"
+               },
+               "server": "https://acme-v02.api.letsencrypt.org/directory",
+               "solvers": [
+                  {
+                     "http01": {
+                        "ingress": {
+                           "class": "nginx"
+                        }
+                     }
+                  }
+               ]
+            }
+         }
+      }
+   },
+   "tournaments": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "tournaments"
+            },
+            "name": "tournaments"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "tournaments"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "tournaments"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": "10000"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "TournamentService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-Tournament-Service-dev"
+                           },
+                           {
+                              "name": "MDB_DATABASE",
+                              "value": "tournaments"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/tournaments:69885ceaa64dfa3ef24bf1422a1fb79bf77a4e7c",
+                        "imagePullPolicy": "Always",
+                        "name": "tournaments",
+                        "ports": [
+                           {
+                              "containerPort": 10000
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "tournaments"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "tournaments"
+            },
+            "name": "tournaments"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "tournaments"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "v1",
+         "kind": "ServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "tournaments"
+            },
+            "name": "tournaments"
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "tournaments"
+            },
+            "name": "tournaments"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 10000
+               }
+            ],
+            "selector": {
+               "app": "tournaments"
+            }
+         }
+      }
+   },
+   "user": {
+      "deploy": {
+         "apiVersion": "apps/v1",
+         "kind": "Deployment",
+         "metadata": {
+            "labels": {
+               "app": "user"
+            },
+            "name": "user"
+         },
+         "spec": {
+            "revisionHistoryLimit": 2,
+            "selector": {
+               "matchLabels": {
+                  "app": "user"
+               }
+            },
+            "template": {
+               "metadata": {
+                  "labels": {
+                     "app": "user"
+                  }
+               },
+               "spec": {
+                  "containers": [
+                     {
+                        "env": [
+                           {
+                              "name": "APP_ENV",
+                              "value": "dev"
+                           },
+                           {
+                              "name": "PORT",
+                              "value": ":8080"
+                           },
+                           {
+                              "name": "APP_NAME",
+                              "value": "UserService"
+                           },
+                           {
+                              "name": "NR_APP_NAME",
+                              "value": "GP-Lig-User-Service-dev"
+                           },
+                           {
+                              "name": "S3_BUCKET_PUBLIC",
+                              "value": "gp-lig-user-service-dev-public"
+                           },
+                           {
+                              "name": "IMAGE_HOST_NAME",
+                              "value": "https://user-assets.dev-lig-app.com/"
+                           }
+                        ],
+                        "envFrom": [
+                           {
+                              "secretRef": {
+                                 "name": "new-relic"
+                              }
+                           },
+                           {
+                              "secretRef": {
+                                 "name": "mongodb"
+                              }
+                           }
+                        ],
+                        "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/user:6cd79c7b7923442ded70b3f2ea483b866ee6fc8d",
+                        "imagePullPolicy": "Always",
+                        "name": "user",
+                        "ports": [
+                           {
+                              "containerPort": 8080
+                           }
+                        ],
+                        "resources": {
+                           "requests": {
+                              "cpu": "100m",
+                              "memory": "50Mi"
+                           }
+                        },
+                        "securityContext": {
+                           "allowPrivilegeEscalation": false,
+                           "capabilities": {
+                              "drop": [
+                                 "ALL"
+                              ]
+                           }
+                        }
+                     }
+                  ],
+                  "securityContext": {
+                     "fsGroup": 2000,
+                     "runAsGroup": 3000,
+                     "runAsUser": 1000
+                  },
+                  "serviceAccountName": "user"
+               }
+            }
+         }
+      },
+      "hpa": {
+         "apiVersion": "autoscaling/v2beta2",
+         "kind": "HorizontalPodAutoscaler",
+         "metadata": {
+            "labels": {
+               "app": "user"
+            },
+            "name": "user"
+         },
+         "spec": {
+            "maxReplicas": 100,
+            "metrics": [
+               {
+                  "resource": {
+                     "name": "memory",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               },
+               {
+                  "resource": {
+                     "name": "cpu",
+                     "target": {
+                        "averageUtilization": 150,
+                        "type": "Utilization"
+                     }
+                  },
+                  "type": "Resource"
+               }
+            ],
+            "minReplicas": 1,
+            "scaleTargetRef": {
+               "apiVersion": "apps/v1",
+               "kind": "Deployment",
+               "name": "user"
+            }
+         }
+      },
+      "sa": {
+         "apiVersion": "irsa.voodoo.io/v1alpha1",
+         "kind": "IamRoleServiceAccount",
+         "metadata": {
+            "labels": {
+               "app": "user"
+            },
+            "name": "user"
+         },
+         "spec": {
+            "policy": {
+               "statement": [
+                  {
+                     "action": [
+                        "sqs:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "sns:*"
+                     ],
+                     "resource": "*"
+                  },
+                  {
+                     "action": [
+                        "s3:GetObject",
+                        "s3:GetObjectAcl",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl",
+                        "s3:DeleteObject"
+                     ],
+                     "resource": "arn:aws:s3:::gp-lig-user-service-dev-public/*"
+                  }
+               ]
+            }
+         }
+      },
+      "svc": {
+         "apiVersion": "v1",
+         "kind": "Service",
+         "metadata": {
+            "labels": {
+               "app": "user"
+            },
+            "name": "user"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 8080
+               }
+            ],
+            "selector": {
+               "app": "user"
+            }
+         }
+      }
+   }
+}

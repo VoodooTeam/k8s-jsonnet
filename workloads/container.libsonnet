@@ -1,3 +1,5 @@
+local common = import '../common/common.libsonnet';
+
 {
   spec(name, image, port)::
     {
@@ -57,14 +59,22 @@
                   + (if args != null then { args: args } else {}),
     },
 
+  envLiterals(keyVals)::
+    assert std.isObject(keyVals);
+    {
+      env+: std.objectValues(
+        std.mapWithKey(common.keyval, keyVals)
+      ),
+    },
+
   envFromSecret(secretName)::
     {
-      envFrom: [$.secretRef(secretName)],
+      envFrom+: [$.secretRef(secretName)],
     },
 
   envFromConfigMap(cmName)::
     {
-      envFrom: [$.configMapRef(cmName)],
+      envFrom+: [$.configMapRef(cmName)],
     },
 
   secretRef(name):: {
