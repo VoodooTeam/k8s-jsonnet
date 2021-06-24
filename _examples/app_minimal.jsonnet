@@ -1,3 +1,3 @@
-local apps = import '../_apps/main.libsonnet';
+local k = import '../1.20/main.libsonnet';
 
-std.objectValues(apps.default('appName', 'appImage:v1.0'))
+std.objectValues(k._app.default('appName', 'appImage:v1.0'))
