@@ -1,7 +1,7 @@
-local container = import '../../workloads/container.libsonnet';
+local k = import '../../1.20/main.libsonnet';
 
 {
-  //issuer:: k.tls.letsencrypt('devops@voodoo.io'),
-  nrSecretRef: container.envFromSecret('new-relic'),
-  mongoSecretRef: container.envFromSecret('mongodb'),
+  k:: k,
+  nrSecretRef:: k.container.envFromSecret('new-relic'),
+  mongoSecretRef:: k.container.envFromSecret('mongodb'),
 }

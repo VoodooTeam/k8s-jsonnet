@@ -1,10 +1,10 @@
-local common = import '../common/common.libsonnet';
+local common = import '../../common/common.libsonnet';
 local pod = import './pod.libsonnet';
 
 {
   default(name, image, port, replicas=null, ns=null)::
     common.apiVersion('apps/v1')
-    + common.metadata(name, ns)
+    + common.metadata.new(name, ns)
     + {
       kind: 'Deployment',
       spec: $.spec(name, image, port, replicas),

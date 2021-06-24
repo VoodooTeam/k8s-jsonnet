@@ -1,4 +1,4 @@
-local common = import '../common/common.libsonnet';
+local common = import '../../common/common.libsonnet';
 
 {
   spec(name, image, port)::

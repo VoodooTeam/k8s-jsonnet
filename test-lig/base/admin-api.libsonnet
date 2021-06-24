@@ -1,15 +1,13 @@
-local app = import '../../_apps/main.libsonnet';
-local common = import '../../common/common.libsonnet';
-local container = import '../../workloads/container.libsonnet';
-local deploy = import '../../workloads/deploy.libsonnet';
+local c = import '../../common/common.libsonnet';
 local shared = import './_shared.libsonnet';
+local k = shared.k;
 
 local name = 'admin-api';
 local port = 8080;
 
 {
   main(app_env, image, domain, nrAppName, firebase_env)::
-    app.default(
+    k._app.default(
       name,
       image,
       port=port,
@@ -17,8 +15,8 @@ local port = 8080;
     ) +
     {
       deploy+:
-        deploy.utils.overrideContainer(
-          container.envLiterals(
+        k.deploy.utils.overrideContainer(
+          k.container.envLiterals(
             {
               APP_ENV: app_env,
               PORT: ':' + std.toString(port),
@@ -29,9 +27,9 @@ local port = 8080;
           ) +
           shared.nrSecretRef +
           shared.mongoSecretRef +
-          container.envFromSecret(name),
+          k.container.envFromSecret(name),
         ),
-      ingress+: common.addAnnotations(
+      ingress+: c.metadata.addAnnotations(
         {
           'nginx.ingress.kubernetes.io/enable-cors': 'true',
           'nginx.ingress.kubernetes.io/cors-allow-methods': 'PUT, GET, POST, DELETE, PATCH, OPTIONS',

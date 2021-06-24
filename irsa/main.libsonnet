@@ -1,12 +1,12 @@
-local common = import '../common/common.libsonnet';
+local c = import '../common/common.libsonnet';
 
 {
 
   default(saName, statements, ns=null)::
     assert std.isArray(statements);
 
-    common.apiVersion('irsa.voodoo.io/v1alpha1')
-    + common.metadata.base(saName, ns)
+    c.apiVersion('irsa.voodoo.io/v1alpha1')
+    + c.metadata.new(saName, ns)
     + {
       kind: 'IamRoleServiceAccount',
     }

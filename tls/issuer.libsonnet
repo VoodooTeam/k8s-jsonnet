@@ -1,4 +1,4 @@
-local common = import '../common/common.libsonnet';
+local c = import '../common/common.libsonnet';
 
 {
   letsencrypt(email, prod=true)::
@@ -6,9 +6,9 @@ local common = import '../common/common.libsonnet';
                                    then 'prod'
                                    else 'staging');
 
-    common.apiVersion('cert-manager.io/v1')
+    c.apiVersion('cert-manager.io/v1')
     + { kind: 'Issuer' }
-    + common.metadata(name)
+    + c.metadata.new(name)
     + {
       spec: {
         acme: {

@@ -1,9 +1,9 @@
-local common = import '../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 {
   default(name, resources=[], maxReplicas=100, ns=null)::
-    common.apiVersion('autoscaling/v2beta2')
-    + common.metadata(name, ns)
+    c.apiVersion('autoscaling/v2beta2')
+    + c.metadata.new(name, ns)
     + {
       kind: 'HorizontalPodAutoscaler',
       spec: {

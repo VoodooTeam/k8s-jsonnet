@@ -1,10 +1,10 @@
-local common = import '../common/common.libsonnet';
+local c = import '../common/common.libsonnet';
 local container = import './container.libsonnet';
 
 {
   default(name, image, port=null)::
-    common.apiVersion('v1')
-    + common.metadata(name)
+    c.apiVersion('v1')
+    + c.metadata.new(name)
     + {
       kind: 'Pod',
       spec: $.spec(name, image, port),

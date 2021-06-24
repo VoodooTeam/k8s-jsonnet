@@ -1,16 +1,13 @@
-local app = import '../../_apps/main.libsonnet';
-local common = import '../../common/common.libsonnet';
 local irsa = import '../../irsa/main.libsonnet';
-local container = import '../../workloads/container.libsonnet';
-local deploy = import '../../workloads/deploy.libsonnet';
 local shared = import './_shared.libsonnet';
+local k = shared.k;
 
 local name = 'activity';
 local port = 8080;
 
 {
   main(app_env, image, nrAppName)::
-    app.default(
+    k._app.default(
       name,
       image,
       port=port,
@@ -18,8 +15,8 @@ local port = 8080;
     ) +
     {
       deploy+:
-        deploy.utils.overrideContainer(
-          container.envLiterals(
+        k.deploy.utils.overrideContainer(
+          k.container.envLiterals(
             {
               APP_ENV: app_env,
               PORT: ':' + std.toString(port),

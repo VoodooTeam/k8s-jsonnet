@@ -1,4 +1,4 @@
-local common = import '../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 {
 
@@ -8,9 +8,9 @@ local common = import '../common/common.libsonnet';
     assert std.length(ports) == 1
            || std.length(std.filter(function(p) p.name == null, ports)) == 0;
 
-    common.apiVersion('v1')
+    c.apiVersion('v1')
     + { kind: 'Service' }
-    + common.metadata(name, ns)
+    + c.metadata.new(name, ns)
     + {
       spec: {
         selector: if selector != null then selector else { app: name },

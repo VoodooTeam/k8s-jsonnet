@@ -1,6 +1,6 @@
+local irsa = import '../../irsa/main.libsonnet';
 local sa = import '../authentication/sa.libsonnet';
 local ingress = import '../ingress/ingress.libsonnet';
-local irsa = import '../irsa/main.libsonnet';
 local svc = import '../services/main.libsonnet';
 local deploy = import '../workloads/deploy.libsonnet';
 local hpa = import '../workloads/hpa.libsonnet';

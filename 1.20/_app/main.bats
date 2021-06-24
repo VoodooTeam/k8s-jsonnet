@@ -1,4 +1,4 @@
-load ../helpers.bats
+load ../../helpers.bats
 
 base="(import '$BATS_TEST_DIRNAME/main.libsonnet')"
 app=$base.default
