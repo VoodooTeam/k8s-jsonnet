@@ -1,4 +1,4 @@
-local irsa = import '../../irsa/main.libsonnet';
+local irsa = import '../../crds/irsa/main.libsonnet';
 local sa = import '../authentication/sa.libsonnet';
 local ingress = import '../ingress/ingress.libsonnet';
 local svc = import '../services/main.libsonnet';

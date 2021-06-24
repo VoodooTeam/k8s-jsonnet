@@ -1,4 +1,4 @@
-local c = import '../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 {
 

@@ -1,4 +1,4 @@
-local irsa = import '../../irsa/main.libsonnet';
+local irsa = import '../../crds/irsa/main.libsonnet';
 local shared = import './_shared.libsonnet';
 local k = shared.k;
 
