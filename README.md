@@ -69,5 +69,5 @@ See [./\_examples/project/](./\_examples/project/) for more examples
 
 ## Run
 ```
-bats -r .
+make test
 ```
