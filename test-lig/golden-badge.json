@@ -1,0 +1,206 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "badge"
+      },
+      "name": "badge"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "badge"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "badge"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "BadgeService"
+                },
+                {
+                  "name": "GAME_SERVICE",
+                  "value": "http://game:8080"
+                },
+                {
+                  "name": "IMAGE_HOST_NAME",
+                  "value": "https://badge-assets.dev-lig-app.com/"
+                },
+                {
+                  "name": "LEAGUE_SERVICE",
+                  "value": "http://league:8080"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Badge-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": ":8080"
+                },
+                {
+                  "name": "S3_BUCKET_PUBLIC",
+                  "value": "gp-lig-badge-service-dev-public"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/badge:93624130f46e60f7680c6f9ffdeb8f07ff501543",
+              "imagePullPolicy": "Always",
+              "name": "badge",
+              "ports": [
+                {
+                  "containerPort": 8080
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                }
+              }
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 2000,
+            "runAsGroup": 3000,
+            "runAsUser": 1000
+          },
+          "serviceAccountName": "badge"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "badge"
+      },
+      "name": "badge"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "badge"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "irsa.voodoo.io/v1alpha1",
+    "kind": "IamRoleServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "badge"
+      },
+      "name": "badge"
+    },
+    "spec": {
+      "policy": {
+        "statement": [
+          {
+            "action": [
+              "sqs:*"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "sns:*"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "s3:GetObject",
+              "s3:GetObjectAcl",
+              "s3:PutObject",
+              "s3:PutObjectAcl",
+              "s3:DeleteObject"
+            ],
+            "resource": "arn:aws:s3:::gp-lig-badge-service-dev-public/*"
+          }
+        ]
+      }
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "badge"
+      },
+      "name": "badge"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 8080
+        }
+      ],
+      "selector": {
+        "app": "badge"
+      }
+    }
+  }
+}
