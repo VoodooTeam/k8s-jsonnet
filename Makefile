@@ -1,4 +1,4 @@
 
 .PHONY: test
 test:
-	bats -r .
+	bats -r ./_tests

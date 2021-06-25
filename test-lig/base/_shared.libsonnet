@@ -1,4 +1,4 @@
-local k = import '../../1.20/main.libsonnet';
+local k = import '../../1.21/main.libsonnet';
 
 {
   k:: k,

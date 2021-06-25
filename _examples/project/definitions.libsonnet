@@ -1,4 +1,1 @@
-local img = import './image.json';
-local apps = import 'k8s-jsonnet/_apps/main.libsonnet';
-
-apps.default('appName', img.app)
+local apps = import 'k8s-jsonnet/1.20/_app/main.libsonnet';
