@@ -18,7 +18,7 @@ local c = import '../../common/common.libsonnet';
       },
     },
 
-  port(port, targetPort=null, name=null)::
+  port(port, targetPort=null, name='http')::
     {
       port: port,
     }

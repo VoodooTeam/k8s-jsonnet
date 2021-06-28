@@ -1,0 +1,206 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "leaderboard"
+      },
+      "name": "leaderboard"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "leaderboard"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "leaderboard"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "LeaderboardService"
+                },
+                {
+                  "name": "GRPC_PORT",
+                  "value": "50051"
+                },
+                {
+                  "name": "MDB_DATABASE",
+                  "value": "leaderboard"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Leaderboard-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": "8080"
+                },
+                {
+                  "name": "REDIS_CLUSTER_ID",
+                  "value": "lig-leaderboard-dev"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/leaderboard:8ffa071ceb18c7ae77dd25ce0604bf4ffd660d58",
+              "imagePullPolicy": "Always",
+              "name": "leaderboard",
+              "ports": [
+                {
+                  "containerPort": 8080
+                },
+                {
+                  "containerPort": 50051
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                }
+              }
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 2000,
+            "runAsGroup": 3000,
+            "runAsUser": 1000
+          },
+          "serviceAccountName": "leaderboard"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "leaderboard"
+      },
+      "name": "leaderboard"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "leaderboard"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "irsa.voodoo.io/v1alpha1",
+    "kind": "IamRoleServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "leaderboard"
+      },
+      "name": "leaderboard"
+    },
+    "spec": {
+      "policy": {
+        "statement": [
+          {
+            "action": [
+              "elasticache:DescribeReplicationGroups"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "sqs:*"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "sns:*"
+            ],
+            "resource": "*"
+          }
+        ]
+      }
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "leaderboard"
+      },
+      "name": "leaderboard"
+    },
+    "spec": {
+      "ports": [
+        {
+          "name": "http",
+          "port": 8080
+        },
+        {
+          "name": "grpc",
+          "port": 50051
+        }
+      ],
+      "selector": {
+        "app": "leaderboard"
+      }
+    }
+  }
+}

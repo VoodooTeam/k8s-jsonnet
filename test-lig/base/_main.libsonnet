@@ -4,9 +4,9 @@ local adminAPI = import './admin-api.libsonnet';
 local badge = import './badge.libsonnet';
 local championships = import './championships.libsonnet';
 local game = import './game.libsonnet';
-//local iap = import './iap.libsonnet';
-//local leaderboard = import './leaderboard.libsonnet';
-//local league = import './league.libsonnet';
+local iap = import './iap.libsonnet';
+local leaderboard = import './leaderboard.libsonnet';
+local league = import './league.libsonnet';
 //local mobileAPI = import './mobile-api.libsonnet';
 //local notification = import './notification.libsonnet';
 //local orchestrator = import './orchestrator.libsonnet';
@@ -32,9 +32,9 @@ local game = import './game.libsonnet';
     badge: badge.main(env, images.badge, nrAppName.badge, assets.badge),
     championships: championships.main(env, images.championships, nrAppName.championships),
     game: game.main(env, images.game, nrAppName.game, assets.game),
-    //iap: iap.main(env, images.iap, nrAppName.iap, assets.iap),
-    //leaderboard: leaderboard.main(env, images.leaderboard, nrAppName.leaderboard, redis_cluster.leaderboard),
-    //league: league.main(env, images.league, nrAppName.league, assets.league),
+    iap: iap.main(env, images.iap, nrAppName.iap, assets.iap),
+    leaderboard: leaderboard.main(env, images.leaderboard, nrAppName.leaderboard, redis_cluster.leaderboard),
+    league: league.main(env, images.league, nrAppName.league, assets.league),
     //mobileAPI: mobileAPI.main(env, images.mobileAPI, domains.mobileAPI, nrAppName.mobileAPI, firebase_env),
     //notification: notification.main(env, images.notification, nrAppName.notification),
     //orchestrator: orchestrator.main(env, images.orchestrator, nrAppName.orchestrator),

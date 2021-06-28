@@ -1,9 +1,9 @@
-local AssetConfig(bucket_name, domain) = {
-  bucket_name: 'gp-lig-' + bucket_name,
-  url: 'https://' + domain + '/',
-};
-
 {
+  local AssetConfig(bucket_name, domain) = {
+    bucket_name: 'gp-lig-' + bucket_name,
+    url: 'https://' + domain + '/',
+  },
+
   withDomain(domain):: {
     badge: AssetConfig('badge-service-dev-public', 'badge-assets.' + domain),
     game: AssetConfig('game-service-dev-public', 'game-assets.' + domain),

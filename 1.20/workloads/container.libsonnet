@@ -42,12 +42,11 @@ local c = import '../../common/common.libsonnet';
     }
     + (if port != null then { ports: [$.port(port)] } else {}),
 
-  port(number, name='default')::
+  port(number, name=null)::
     assert number > 0 && number < 65536;
     {
       containerPort: number,
-      name: name,
-    },
+    } + (if name != null then { name: name } else {}),
 
 
   entryPoint(command=null, args=null)::
