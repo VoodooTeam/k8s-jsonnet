@@ -41,6 +41,7 @@ local irsa = import '../../crds/irsa/main.libsonnet';
           )
           + shared.nrSecretRef
           + shared.mongoSecretRef,
-        ),
+        )
+        + k.deploy.utils.removeAllProbes(),
     },
 }

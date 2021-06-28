@@ -39,6 +39,7 @@ local k = shared.k;
           + shared.nrSecretRef
           + shared.mongoSecretRef
           + k.container.envFromSecret('in-app-purchase'),
-        ),
+        )
+        + k.deploy.utils.removeAllProbes(),
     },
 }

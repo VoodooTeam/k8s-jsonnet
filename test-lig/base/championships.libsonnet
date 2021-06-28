@@ -26,6 +26,7 @@ local k = shared.k;
           )
           + shared.nrSecretRef
           + shared.mongoSecretRef,
-        ),
+        )
+        + k.deploy.utils.removeAllProbes(),
     },
 }

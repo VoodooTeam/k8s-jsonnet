@@ -4,21 +4,21 @@
     "kind": "Deployment",
     "metadata": {
       "labels": {
-        "app": "iap"
+        "app": "user"
       },
-      "name": "iap"
+      "name": "user"
     },
     "spec": {
       "revisionHistoryLimit": 2,
       "selector": {
         "matchLabels": {
-          "app": "iap"
+          "app": "user"
         }
       },
       "template": {
         "metadata": {
           "labels": {
-            "app": "iap"
+            "app": "user"
           }
         },
         "spec": {
@@ -31,15 +31,15 @@
                 },
                 {
                   "name": "APP_NAME",
-                  "value": "IAPService"
+                  "value": "UserService"
                 },
                 {
                   "name": "IMAGE_HOST_NAME",
-                  "value": "https://iap-assets.dev-lig-app.com/"
+                  "value": "https://user-assets.dev-lig-app.com/"
                 },
                 {
                   "name": "NR_APP_NAME",
-                  "value": "GP-Lig-IAP-Service-dev"
+                  "value": "GP-Lig-User-Service-dev"
                 },
                 {
                   "name": "PORT",
@@ -47,7 +47,7 @@
                 },
                 {
                   "name": "S3_BUCKET_PUBLIC",
-                  "value": "gp-lig-iap-service-dev-public"
+                  "value": "gp-lig-user-service-dev-public"
                 }
               ],
               "envFrom": [
@@ -60,16 +60,11 @@
                   "secretRef": {
                     "name": "mongodb"
                   }
-                },
-                {
-                  "secretRef": {
-                    "name": "in-app-purchase"
-                  }
                 }
               ],
-              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/iap:b820e2b1572bc8aaae520165cafcded647607651",
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/user:6cd79c7b7923442ded70b3f2ea483b866ee6fc8d",
               "imagePullPolicy": "Always",
-              "name": "iap",
+              "name": "user",
               "ports": [
                 {
                   "containerPort": 8080
@@ -96,7 +91,7 @@
             "runAsGroup": 3000,
             "runAsUser": 1000
           },
-          "serviceAccountName": "iap"
+          "serviceAccountName": "user"
         }
       }
     }
@@ -106,9 +101,9 @@
     "kind": "HorizontalPodAutoscaler",
     "metadata": {
       "labels": {
-        "app": "iap"
+        "app": "user"
       },
-      "name": "iap"
+      "name": "user"
     },
     "spec": {
       "maxReplicas": 100,
@@ -138,7 +133,7 @@
       "scaleTargetRef": {
         "apiVersion": "apps/v1",
         "kind": "Deployment",
-        "name": "iap"
+        "name": "user"
       }
     }
   },
@@ -147,9 +142,9 @@
     "kind": "IamRoleServiceAccount",
     "metadata": {
       "labels": {
-        "app": "iap"
+        "app": "user"
       },
-      "name": "iap"
+      "name": "user"
     },
     "spec": {
       "policy": {
@@ -174,7 +169,7 @@
               "s3:PutObjectAcl",
               "s3:DeleteObject"
             ],
-            "resource": "arn:aws:s3:::gp-lig-iap-service-dev-public/*"
+            "resource": "arn:aws:s3:::gp-lig-user-service-dev-public/*"
           }
         ]
       }
@@ -185,9 +180,9 @@
     "kind": "Service",
     "metadata": {
       "labels": {
-        "app": "iap"
+        "app": "user"
       },
-      "name": "iap"
+      "name": "user"
     },
     "spec": {
       "ports": [
@@ -196,7 +191,7 @@
         }
       ],
       "selector": {
-        "app": "iap"
+        "app": "user"
       }
     }
   }

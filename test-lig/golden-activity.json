@@ -133,7 +133,7 @@
       }
     }
   },
-  "sa": {
+  "irsa": {
     "apiVersion": "irsa.voodoo.io/v1alpha1",
     "kind": "IamRoleServiceAccount",
     "metadata": {

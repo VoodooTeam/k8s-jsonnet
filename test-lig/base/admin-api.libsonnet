@@ -28,7 +28,9 @@ local k = shared.k;
           + shared.nrSecretRef
           + shared.mongoSecretRef
           + k.container.envFromSecret(name),
-        ),
+        )
+        + k.deploy.utils.removeAllProbes(),
+
 
       ingress+: c.metadata.addAnnotations(
         {

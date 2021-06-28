@@ -12,7 +12,7 @@ local notification = import './notification.libsonnet';
 local orchestrator = import './orchestrator.libsonnet';
 local scoreHistory = import './score-history.libsonnet';
 local tournaments = import './tournaments.libsonnet';
-//local user = import './user.libsonnet';
+local user = import './user.libsonnet';
 
 {
   removeContainerServiceLimits(container):: container { resources+: { limits:: null } },
@@ -40,8 +40,7 @@ local tournaments = import './tournaments.libsonnet';
     orchestrator: orchestrator.main(env, images.orchestrator, nrAppName.orchestrator),
     scoreHistory: scoreHistory.main(env, images.scoreHistory, nrAppName.scoreHistory),
     tournaments: tournaments.main(env, images.tournaments, nrAppName.tournaments),
-    //user: user.main(env, images.user, nrAppName.user, assets.user),
-    //shared: { issuer: shared.issuer },
+    user: user.main(env, images.user, nrAppName.user, assets.user),
   }),
 
 }
