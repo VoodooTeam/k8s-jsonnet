@@ -2,10 +2,10 @@ local irsa = import '../../crds/irsa/main.libsonnet';
 local shared = import './_shared.libsonnet';
 local k = shared.k;
 
-local name = 'activity';
-local port = 8080;
-
 {
+  local name = 'activity',
+  local port = 8080,
+
   main(app_env, image, nrAppName)::
     k._app.default(
       name,

@@ -2,8 +2,8 @@ local shared = import './_shared.libsonnet';
 local activity = import './activity.libsonnet';
 local adminAPI = import './admin-api.libsonnet';
 local badge = import './badge.libsonnet';
-//local championships = import './championships.libsonnet';
-//local game = import './game.libsonnet';
+local championships = import './championships.libsonnet';
+local game = import './game.libsonnet';
 //local iap = import './iap.libsonnet';
 //local leaderboard = import './leaderboard.libsonnet';
 //local league = import './league.libsonnet';
@@ -30,8 +30,8 @@ local badge = import './badge.libsonnet';
     activity: activity.main(env, images.activity, nrAppName.activity),
     adminAPI: adminAPI.main(env, images.adminAPI, domains.adminAPI, nrAppName.adminAPI, firebase_env),
     badge: badge.main(env, images.badge, nrAppName.badge, assets.badge),
-    //championships: championships.main(env, images.championships, nrAppName.championships),
-    //game: game.main(env, images.game, nrAppName.game, assets.game),
+    championships: championships.main(env, images.championships, nrAppName.championships),
+    game: game.main(env, images.game, nrAppName.game, assets.game),
     //iap: iap.main(env, images.iap, nrAppName.iap, assets.iap),
     //leaderboard: leaderboard.main(env, images.leaderboard, nrAppName.leaderboard, redis_cluster.leaderboard),
     //league: league.main(env, images.league, nrAppName.league, assets.league),

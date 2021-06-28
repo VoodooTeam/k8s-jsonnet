@@ -2,10 +2,10 @@ local c = import '../../common/common.libsonnet';
 local shared = import './_shared.libsonnet';
 local k = shared.k;
 
-local name = 'admin-api';
-local port = 8080;
-
 {
+  local name = 'admin-api',
+  local port = 8080,
+
   main(app_env, image, domain, nrAppName, firebase_env)::
     k._app.default(
       name,

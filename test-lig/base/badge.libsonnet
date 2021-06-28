@@ -1,12 +1,12 @@
-local c = import '../../common/common.libsonnet';
 local shared = import './_shared.libsonnet';
 local k = shared.k;
 local irsa = import '../../crds/irsa/main.libsonnet';
 
-local name = 'badge';
-local port = 8080;
 
 {
+  local name = 'badge',
+  local port = 8080,
+
   main(app_env, image, nrAppName, asset_config)::
     k._app.default(
       name,
@@ -30,13 +30,13 @@ local port = 8080;
           k.container.envLiterals(
             {
               APP_ENV: app_env,
-              PORT: ':' + std.toString(port),
               APP_NAME: 'BadgeService',
-              NR_APP_NAME: nrAppName,
-              S3_BUCKET_PUBLIC: asset_config.bucket_name,
-              IMAGE_HOST_NAME: asset_config.url,
               GAME_SERVICE: 'http://game:8080',
+              IMAGE_HOST_NAME: asset_config.url,
               LEAGUE_SERVICE: 'http://league:8080',
+              NR_APP_NAME: nrAppName,
+              PORT: ':' + std.toString(port),
+              S3_BUCKET_PUBLIC: asset_config.bucket_name,
             }
           ) +
           shared.nrSecretRef +

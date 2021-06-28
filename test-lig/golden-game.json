@@ -1,0 +1,187 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "game"
+      },
+      "name": "game"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "game"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "game"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "GameService"
+                },
+                {
+                  "name": "IMAGE_HOST_NAME",
+                  "value": "https://game-assets.dev-lig-app.com/"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Game-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": ":8080"
+                },
+                {
+                  "name": "S3_BUCKET_PUBLIC",
+                  "value": "gp-lig-game-service-dev-public"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/game:56469d7de8ce0845704257b6f5d347b29a851354",
+              "imagePullPolicy": "Always",
+              "name": "game",
+              "ports": [
+                {
+                  "containerPort": 8080
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {}
+            }
+          ],
+          "securityContext": {},
+          "serviceAccountName": "game"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "game"
+      },
+      "name": "game"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "game"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "irsa.voodoo.io/v1alpha1",
+    "kind": "IamRoleServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "game"
+      },
+      "name": "game"
+    },
+    "spec": {
+      "policy": {
+        "statement": [
+          {
+            "action": [
+              "sqs:*"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "sns:*"
+            ],
+            "resource": "*"
+          },
+          {
+            "action": [
+              "s3:GetObject",
+              "s3:GetObjectAcl",
+              "s3:PutObject",
+              "s3:PutObjectAcl",
+              "s3:DeleteObject"
+            ],
+            "resource": "arn:aws:s3:::gp-lig-game-service-dev-public/*"
+          }
+        ]
+      }
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "game"
+      },
+      "name": "game"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 8080
+        }
+      ],
+      "selector": {
+        "app": "game"
+      }
+    }
+  }
+}

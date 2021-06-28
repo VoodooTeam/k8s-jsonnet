@@ -1,30 +1,31 @@
 local shared = import './_shared.libsonnet';
-local pkg = import 'k8s-jsonnet/_pkgs/main.libsonnet';
-local utils = import 'k8s-jsonnet/_utils/main.libsonnet';
-local k = import 'k8s-jsonnet/main.libsonnet';
-
-local name = 'championships';
-local port = 50051;
+local k = shared.k;
 
 {
-  main(app_env, image, nrAppName)::
-    pkg.simple_dep_svc(name, image, port) +
-    { deploy+: utils.deploy_container_merge(image, $.env_vars(app_env, nrAppName)) },  // inject env object to container definition
+  local name = 'championships',
+  local port = 50051,
 
-  env_vars(app_env, nrAppName)::
-    k.container.env(
-      [
-        k.common.keyval('APP_ENV', app_env),
-        k.common.keyval('APP_NAME', 'ChampionshipService'),
-        k.common.keyval('GRPC_PORT', std.toString(port)),
-        k.common.keyval('NR_APP_NAME', nrAppName),
-        k.common.keyval('LIG_SVC_LEADERBOARDS', 'leaderboard:50051'),
-      ]
-    )
-    + k.container.envFrom(
-      [
-        shared.nrSecretRef,
-        shared.mongoSecretRef,
-      ]
-    ),
+  main(app_env, image, nrAppName)::
+    k._app.default(
+      name,
+      image,
+      port=port,
+    ) +
+    {
+      deploy+:
+        k.deploy.utils.overrideContainer(
+          k.container.envLiterals(
+            {
+
+              APP_ENV: app_env,
+              APP_NAME: 'ChampionshipService',
+              GRPC_PORT: std.toString(port),
+              NR_APP_NAME: nrAppName,
+              LIG_SVC_LEADERBOARDS: 'leaderboard:50051',
+            }
+          ) +
+          shared.nrSecretRef +
+          shared.mongoSecretRef,
+        ),
+    },
 }
