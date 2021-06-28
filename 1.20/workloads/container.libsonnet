@@ -1,4 +1,4 @@
-local common = import '../../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 {
   spec(name, image, port)::
@@ -63,7 +63,7 @@ local common = import '../../common/common.libsonnet';
     assert std.isObject(keyVals);
     {
       env+: std.objectValues(
-        std.mapWithKey(common.keyval, keyVals)
+        std.mapWithKey(c.keyval, keyVals)
       ),
     },
 
