@@ -1,16 +1,18 @@
-local apps = import '../_apps/main.libsonnet';
-local container = import '../workloads/container.libsonnet';
-local deploy = import '../workloads/deploy.libsonnet';
-
-// our "base" application, using all the default best practices
-local myApp = apps.default('appName', 'appImage:v1.0');
-
-std.objectValues(
-  myApp
-  {  // overrides targetting specific resources
-    deploy+: super.deploy  // we update the deployment returned by the apps.app function
-             + deploy.utils.overrideContainer(
-               container.envFromSecret('my-secret-name')
-             ),
-  }
+std.flattenArrays(
+  std.map(
+    function(k)
+      std.objectValues(
+        k._app.default('appName', 'appImage:v1.0')
+        {  // overrides targetting specific resources
+          deploy+: super.deploy  // we update the deployment returned by the apps.app function
+                   + k.deploy.utils.overrideContainer(
+                     k.container.envFromSecret('my-secret-name')
+                   ),
+        }
+      ),
+    [
+      (import '../1.20/main.libsonnet'),
+      (import '../1.21/main.libsonnet'),
+    ]
+  )
 )

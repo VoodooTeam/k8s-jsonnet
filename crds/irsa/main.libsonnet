@@ -1,12 +1,14 @@
-local common = import '../common/common.libsonnet';
+// generation of [Irsa-operator](https://github.com/VoodooTeam/irsa-operator) manifests
+
+local c = import '../../common/common.libsonnet';
 
 {
 
   default(saName, statements, ns=null)::
     assert std.isArray(statements);
 
-    common.apiVersion('irsa.voodoo.io/v1alpha1')
-    + common.metadata(saName, ns)
+    c.apiVersion('irsa.voodoo.io/v1alpha1')
+    + c.metadata.new(saName, ns)
     + {
       kind: 'IamRoleServiceAccount',
     }
@@ -26,8 +28,7 @@ local common = import '../common/common.libsonnet';
       action: actions,
     },
 
-  // statements provide the same interface than terraform :
-  // it takes a list of resources and the actions to allow on all of them
+  // statements takes a list of resources and the actions to allow on all of them
   statements(resources, actions)::
     assert std.isArray(resources);
     assert std.isArray(actions);

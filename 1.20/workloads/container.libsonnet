@@ -1,3 +1,5 @@
+local c = import '../../common/common.libsonnet';
+
 {
   spec(name, image, port)::
     {
@@ -40,12 +42,11 @@
     }
     + (if port != null then { ports: [$.port(port)] } else {}),
 
-  port(number, name='default')::
+  port(number, name=null)::
     assert number > 0 && number < 65536;
     {
       containerPort: number,
-      name: name,
-    },
+    } + (if name != null then { name: name } else {}),
 
 
   entryPoint(command=null, args=null)::
@@ -57,14 +58,22 @@
                   + (if args != null then { args: args } else {}),
     },
 
+  envLiterals(keyVals)::
+    assert std.isObject(keyVals);
+    {
+      env+: std.objectValues(
+        std.mapWithKey(c.keyval, keyVals)
+      ),
+    },
+
   envFromSecret(secretName)::
     {
-      envFrom: [$.secretRef(secretName)],
+      envFrom+: [$.secretRef(secretName)],
     },
 
   envFromConfigMap(cmName)::
     {
-      envFrom: [$.configMapRef(cmName)],
+      envFrom+: [$.configMapRef(cmName)],
     },
 
   secretRef(name):: {

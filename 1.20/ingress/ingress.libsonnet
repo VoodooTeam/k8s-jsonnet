@@ -1,4 +1,4 @@
-local common = import '../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 // paths must be a list of objects with keys :
 // route(string), svcName(string), svcPort(string|number), routeType(optional, string)
@@ -9,8 +9,8 @@ local common = import '../common/common.libsonnet';
     assert std.objectHas(paths[0], 'svcName');
     assert std.objectHas(paths[0], 'svcPort');
 
-    common.apiVersion('networking.k8s.io/v1beta1')
-    + common.metadata(
+    c.apiVersion('networking.k8s.io/v1beta1')
+    + c.metadata.new(
       name,
       ns,
       annotations={

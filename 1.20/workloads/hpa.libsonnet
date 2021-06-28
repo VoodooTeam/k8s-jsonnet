@@ -1,9 +1,9 @@
-local common = import '../common/common.libsonnet';
+local c = import '../../common/common.libsonnet';
 
 {
   default(name, resources=[], maxReplicas=100, ns=null)::
-    common.apiVersion('autoscaling/v2beta2')
-    + common.metadata(name, ns)
+    c.apiVersion('autoscaling/v2beta2')
+    + c.metadata.new(name, ns)
     + {
       kind: 'HorizontalPodAutoscaler',
       spec: {
@@ -19,8 +19,8 @@ local common = import '../common/common.libsonnet';
           then resources
           else
             [
-              $.resource('memory', 100),  // this is based on the request, not the limit
-              $.resource('cpu', 100),
+              $.resource('memory', 90),  // this is based on the request, not the limit
+              $.resource('cpu', 90),
             ],
       },
     },

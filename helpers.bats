@@ -1,3 +1,7 @@
+k8s=(
+  ["1|20"]="(import '$BATS_TEST_DIRNAME/../1.20/main.libsonnet')"  # this is relative to the test files themselves
+  ["1|21"]="(import '$BATS_TEST_DIRNAME/../1.21/main.libsonnet')"
+  )
 gen="jsonnet -e"
 kubeval="kubeval"
 kubevalIgnoreUnknown="kubeval --ignore-missing-schemas"
