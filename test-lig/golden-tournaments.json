@@ -1,0 +1,166 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "tournaments"
+      },
+      "name": "tournaments"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "tournaments"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "tournaments"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "TournamentService"
+                },
+                {
+                  "name": "MDB_DATABASE",
+                  "value": "tournaments"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Tournament-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": "10000"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/tournaments:69885ceaa64dfa3ef24bf1422a1fb79bf77a4e7c",
+              "imagePullPolicy": "Always",
+              "name": "tournaments",
+              "ports": [
+                {
+                  "containerPort": 10000
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                }
+              }
+            }
+          ],
+          "securityContext": {
+            "fsGroup": 2000,
+            "runAsGroup": 3000,
+            "runAsUser": 1000
+          },
+          "serviceAccountName": "tournaments"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "tournaments"
+      },
+      "name": "tournaments"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "tournaments"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "tournaments"
+      },
+      "name": "tournaments"
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "tournaments"
+      },
+      "name": "tournaments"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 10000
+        }
+      ],
+      "selector": {
+        "app": "tournaments"
+      }
+    }
+  }
+}

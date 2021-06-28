@@ -12,8 +12,8 @@ local k = shared.k;
       image,
       port=port,
       awsPermissions=[irsa.statement('*', ['sqs:*'])]
-    ) +
-    {
+    )
+    + {
       deploy+:
         k.deploy.utils.overrideContainer(
           k.container.envLiterals(
@@ -24,9 +24,9 @@ local k = shared.k;
               NR_APP_NAME: nrAppName,
               USER_SERVICE: 'http://user:8080',
             }
-          ) +
-          shared.nrSecretRef +
-          shared.mongoSecretRef,
+          )
+          + shared.nrSecretRef
+          + shared.mongoSecretRef,
         ),
     },
 }

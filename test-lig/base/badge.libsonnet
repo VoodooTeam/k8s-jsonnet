@@ -38,9 +38,9 @@ local irsa = import '../../crds/irsa/main.libsonnet';
               PORT: ':' + std.toString(port),
               S3_BUCKET_PUBLIC: asset_config.bucket_name,
             }
-          ) +
-          shared.nrSecretRef +
-          shared.mongoSecretRef,
+          )
+          + shared.nrSecretRef
+          + shared.mongoSecretRef,
         ),
     },
 }

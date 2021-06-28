@@ -1,0 +1,151 @@
+{
+  "deploy": {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+      "labels": {
+        "app": "orchestrator"
+      },
+      "name": "orchestrator"
+    },
+    "spec": {
+      "revisionHistoryLimit": 2,
+      "selector": {
+        "matchLabels": {
+          "app": "orchestrator"
+        }
+      },
+      "template": {
+        "metadata": {
+          "labels": {
+            "app": "orchestrator"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ENV",
+                  "value": "dev"
+                },
+                {
+                  "name": "APP_NAME",
+                  "value": "OrchestratorService"
+                },
+                {
+                  "name": "NR_APP_NAME",
+                  "value": "GP-Lig-Orchestrator-Service-dev"
+                },
+                {
+                  "name": "PORT",
+                  "value": ":8080"
+                }
+              ],
+              "envFrom": [
+                {
+                  "secretRef": {
+                    "name": "new-relic"
+                  }
+                },
+                {
+                  "secretRef": {
+                    "name": "mongodb"
+                  }
+                }
+              ],
+              "image": "456072703506.dkr.ecr.eu-west-1.amazonaws.com/gaming-platform/lig/orchestrator:e0bf06105c3106d1061f8b9d3a36174d90879dff",
+              "imagePullPolicy": "Always",
+              "name": "orchestrator",
+              "ports": [
+                {
+                  "containerPort": 8080
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": "100m",
+                  "memory": "50Mi"
+                }
+              },
+              "securityContext": {}
+            }
+          ],
+          "securityContext": {},
+          "serviceAccountName": "orchestrator"
+        }
+      }
+    }
+  },
+  "hpa": {
+    "apiVersion": "autoscaling/v2beta2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "labels": {
+        "app": "orchestrator"
+      },
+      "name": "orchestrator"
+    },
+    "spec": {
+      "maxReplicas": 100,
+      "metrics": [
+        {
+          "resource": {
+            "name": "memory",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        },
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 150,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "orchestrator"
+      }
+    }
+  },
+  "sa": {
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": {
+      "labels": {
+        "app": "orchestrator"
+      },
+      "name": "orchestrator"
+    }
+  },
+  "svc": {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+      "labels": {
+        "app": "orchestrator"
+      },
+      "name": "orchestrator"
+    },
+    "spec": {
+      "ports": [
+        {
+          "port": 8080
+        }
+      ],
+      "selector": {
+        "app": "orchestrator"
+      }
+    }
+  }
+}

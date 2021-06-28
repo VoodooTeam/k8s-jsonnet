@@ -35,10 +35,10 @@ local k = shared.k;
               S3_BUCKET_PUBLIC: asset_config.bucket_name,
               IMAGE_HOST_NAME: asset_config.url,
             }
-          ) +
-          shared.nrSecretRef +
-          shared.mongoSecretRef +
-          k.container.envFromSecret('in-app-purchase'),
+          )
+          + shared.nrSecretRef
+          + shared.mongoSecretRef
+          + k.container.envFromSecret('in-app-purchase'),
         ),
     },
 }

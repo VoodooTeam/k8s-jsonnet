@@ -41,8 +41,8 @@ local irsa = import '../../crds/irsa/main.libsonnet';
               ],
           }
         )
-        + k.deploy.utils.removeAllProbes()
-      ,
+        + k.deploy.utils.removeAllProbes(),
+
       svc+: {
         spec+: {
           ports+: [

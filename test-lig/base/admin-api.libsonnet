@@ -24,11 +24,12 @@ local k = shared.k;
               NR_APP_NAME: nrAppName,
               FIREBASE_PROJECT_ID: firebase_env,
             }
-          ) +
-          shared.nrSecretRef +
-          shared.mongoSecretRef +
-          k.container.envFromSecret(name),
+          )
+          + shared.nrSecretRef
+          + shared.mongoSecretRef
+          + k.container.envFromSecret(name),
         ),
+
       ingress+: c.metadata.addAnnotations(
         {
           'nginx.ingress.kubernetes.io/enable-cors': 'true',

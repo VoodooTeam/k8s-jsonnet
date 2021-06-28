@@ -23,9 +23,9 @@ local k = shared.k;
               NR_APP_NAME: nrAppName,
               LIG_SVC_LEADERBOARDS: 'leaderboard:50051',
             }
-          ) +
-          shared.nrSecretRef +
-          shared.mongoSecretRef,
+          )
+          + shared.nrSecretRef
+          + shared.mongoSecretRef,
         ),
     },
 }
