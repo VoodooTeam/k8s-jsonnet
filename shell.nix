@@ -11,7 +11,7 @@ let
   voodoo = import
     (builtins.fetchGit {
       url = "https://github.com/VoodooTeam/devops-nix-pkgs.git";
-      ref = "v0.1.0";
+      ref = "v0.1.1";
     })
     { inherit pkgs system; };
 in

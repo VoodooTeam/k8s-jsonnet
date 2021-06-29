@@ -47,7 +47,10 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
       securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
         runAsNonRoot: true
+        runAsUser: 1000
       serviceAccountName: appName
 ---
 apiVersion: autoscaling/v2beta2
