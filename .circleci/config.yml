@@ -1,0 +1,40 @@
+version: 2.1
+
+jobs:
+  tests:
+    docker:
+      - image: cimg/node:16.1.0
+    steps:
+      - checkout
+      - run: 
+          name : add home bin folder 
+          command: mkdir ~/bin 
+      - run: 
+          name : install jsonnet
+          command: |
+            wget https://github.com/google/go-jsonnet/releases/download/v0.17.0/go-jsonnet_0.17.0_Linux_x86_64.tar.gz 
+            tar -xf ./go-jsonnet_0.17.0_Linux_x86_64.tar.gz
+            mv ./jsonnet ~/bin/ && mv ./jsonnetfmt ~/bin/
+      - run: 
+          name : install polaris
+          command: |
+            wget https://github.com/FairwindsOps/polaris/releases/download/3.2.1/polaris_3.2.1_linux_amd64.tar.gz
+            tar -xf ./polaris_3.2.1_linux_amd64.tar.gz
+            mv ./polaris ~/bin/ 
+      - run: 
+          name : install kubeval
+          command: |
+            wget https://github.com/instrumenta/kubeval/releases/download/v0.16.1/kubeval-linux-amd64.tar.gz
+            tar -xf ./kubeval-linux-amd64.tar.gz
+            mv ./kubeval ~/bin/ 
+      - run: 
+          name : install bats-core
+          command: sudo npm install -g bats  
+      - run: 
+          name : test 
+          command: bats -r .
+
+workflows:
+  test:
+    jobs:
+      - tests
